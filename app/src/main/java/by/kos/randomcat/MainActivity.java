@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -39,6 +40,12 @@ public class MainActivity extends AppCompatActivity {
             json.append(res);
           }
         } while (bufferedReader.readLine() != null);
+
+        JSONObject jsonObject = new JSONObject(json.toString());
+
+        CatImage catImage = new CatImage(jsonObject.get("url").toString());
+        Log.d("mainActivity", catImage.getUrl());
+
         Log.d("mainActivity", json.toString());
 
       } catch (Exception e) {
