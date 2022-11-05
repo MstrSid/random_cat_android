@@ -1,3 +1,6 @@
 <resources>
   <string name="app_name">Random Cat</string>
+  <string name="txt_next_image"><![CDATA[Next image >>]]></string>
+  <string name="cat_image">cat image</string>
+  <string name="txt_error_loading">Ошибка загрузки...</string>
 </resources>

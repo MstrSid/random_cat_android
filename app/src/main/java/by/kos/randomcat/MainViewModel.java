@@ -2,10 +2,13 @@ package by.kos.randomcat;
 
 import android.app.Application;
 import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import com.google.android.material.snackbar.Snackbar;
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
 import io.reactivex.rxjava3.core.Scheduler;
 import io.reactivex.rxjava3.core.Single;
@@ -27,8 +30,13 @@ public class MainViewModel extends AndroidViewModel {
   private static final String KEY_GET_URL = "url";
   private static final String TAG = "mainActivity";
   private MutableLiveData<CatImage> catImage = new MutableLiveData<>();
+  private MutableLiveData<Boolean> isLoad = new MutableLiveData();
+   private MutableLiveData<Boolean> isError = new MutableLiveData();
   private CompositeDisposable disposableContainer = new CompositeDisposable();
 
+  public LiveData<Boolean> getIsError() {
+    return isError;
+  }
   public LiveData<CatImage> getCatImage() {
     return catImage;
   }
@@ -37,10 +45,23 @@ public class MainViewModel extends AndroidViewModel {
     super(application);
   }
 
+  public LiveData<Boolean> getIsLoad() {
+    return isLoad;
+  }
+
   public void loadCatImage() {
     Disposable disposable = loadCatImageRx()
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
+        .doOnSubscribe(disposable1 -> {
+          isLoad.setValue(true);
+        })
+        .doAfterTerminate(() -> {
+          isLoad.setValue(false);
+        })
+        .doOnError(throwable -> {
+          isError.setValue(true);
+        })
         .subscribe(image -> {
           catImage.setValue(image);
         }, throwable -> {
@@ -66,8 +87,8 @@ public class MainViewModel extends AndroidViewModel {
       } while (bufferedReader.readLine() != null);
 
       JSONObject jsonObject = new JSONObject(json.toString());
-
-      return new CatImage(jsonObject.get(KEY_GET_URL).toString());
+      return new CatImage(
+          BASE_URL.substring(0, BASE_URL.length() - 5) + jsonObject.get(KEY_GET_URL));
     });
   }
 
