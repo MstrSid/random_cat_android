@@ -25,18 +25,17 @@ import org.json.JSONObject;
 
 public class MainViewModel extends AndroidViewModel {
 
-  private static final String BASE_URL = "https://cataas.com/cat?";
-  private static final String URL_OPTION_JSON = "json=true";
-  private static final String KEY_GET_URL = "url";
   private static final String TAG = "mainActivity";
+  public final String BASE_URL = "https://cataas.com/";
   private MutableLiveData<CatImage> catImage = new MutableLiveData<>();
   private MutableLiveData<Boolean> isLoad = new MutableLiveData();
-   private MutableLiveData<Boolean> isError = new MutableLiveData();
+  private MutableLiveData<Boolean> isError = new MutableLiveData();
   private CompositeDisposable disposableContainer = new CompositeDisposable();
 
   public LiveData<Boolean> getIsError() {
     return isError;
   }
+
   public LiveData<CatImage> getCatImage() {
     return catImage;
   }
@@ -71,25 +70,7 @@ public class MainViewModel extends AndroidViewModel {
   }
 
   private Single<CatImage> loadCatImageRx() {
-    return Single.fromCallable(() -> {
-      URL url = new URL(BASE_URL + URL_OPTION_JSON);
-      HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-      InputStream inputStream = urlConnection.getInputStream();
-      InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-      BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-      StringBuilder json = new StringBuilder();
-      String res;
-      do {
-        res = bufferedReader.readLine();
-        if (res != null) {
-          json.append(res);
-        }
-      } while (bufferedReader.readLine() != null);
-
-      JSONObject jsonObject = new JSONObject(json.toString());
-      return new CatImage(
-          BASE_URL.substring(0, BASE_URL.length() - 5) + jsonObject.get(KEY_GET_URL));
-    });
+    return ApiFactory.getApiService().loadCatImage();
   }
 
   @Override

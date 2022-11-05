@@ -15,8 +15,6 @@ import com.google.android.material.snackbar.Snackbar;
 public class MainActivity extends AppCompatActivity {
 
   private MainViewModel viewModel;
-  private static final String TAG = "mainActivity";
-
   private ImageView ivCat;
   private Button btnNext;
   private ProgressBar progressBar;
@@ -40,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
     viewModel.getCatImage().observe(this, catImage -> {
       Glide.with(MainActivity.this)
-          .load(catImage.getUrl())
+          .load(viewModel.BASE_URL + catImage.getUrl())
           .into(ivCat);
     });
 
